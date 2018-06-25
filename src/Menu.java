@@ -1,4 +1,7 @@
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
+import javafx.stage.Stage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +14,7 @@ public class Menu extends JFrame {
     private JButton new_game;
     private JButton highscore;
     private JButton exit;
+    private Application game;
 
     public Menu(){
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -38,24 +42,35 @@ public class Menu extends JFrame {
         new_game.setAlignmentX(Component.CENTER_ALIGNMENT);
         new_game.addActionListener(e -> {
            String selection = (String) JOptionPane.showInputDialog(this, "Podaj rozmiar planszy do gry", "Nowa Gra",
-                    JOptionPane.QUESTION_MESSAGE, null, new String[] { "3x4", "4x5", "5x6" },
-                    "3x4");
+                    JOptionPane.QUESTION_MESSAGE, null, new String[] { "Duże", "Średnie", "Małe" },
+                    "Małe");
            if(!(selection==null)) {
-               setVisible(false);
+               //APLICATION JAVAFX
+               switch (selection){
+                   case "Małe":
+                       game = new NewGame(400,300);
+                       break;
+                   case "Średnie":
+                       game = new NewGame(600,450);
+                       break;
+                   case "Duże":
+                       game = new NewGame(800,600);
+                       break;
+               }
 
-               
-               javafx.application.Application.launch(NewGame.class);
-               /*
-               game.addWindowListener(new WindowAdapter() {
+               setVisible(false);
+               Platform.setImplicitExit(false);
+               Platform.runLater(new Runnable() {
                    @Override
-                   public void windowClosed(WindowEvent e) {
-                       super.windowClosed(e);
-                       setVisible(true);
-                       ((NewGame) game).setCompare1("");
-                       ((NewGame) game).setCompare2("");
+                   public void run() {
+                       try {
+                           game.init();
+                           game.start(new Stage());
+                       } catch (Exception e1) {
+                           e1.printStackTrace();
+                       }
                    }
                });
-               */
            }
 
         });
